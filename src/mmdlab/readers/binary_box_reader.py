@@ -1,9 +1,9 @@
-from particles_container import ParticlesContainer
 import os 
 import sys
 import struct
 import numpy
 
+from particles_container import ParticlesContainer
 from numba import jit,float64,int8,autojit
 
 def raw_particles(f,box_count,particles_count):
@@ -16,9 +16,9 @@ def raw_particles(f,box_count,particles_count):
 	vx = numpy.zeros(particles_count, dtype='d')
 	vy = numpy.zeros(particles_count, dtype='d')
 	vz = numpy.zeros(particles_count, dtype='d')
-	
-	
+		
 	particles_count = 0;
+	
 	for box in xrange(box_count):
 
 		if box % 100000==0:
@@ -49,6 +49,7 @@ def raw_particles(f,box_count,particles_count):
 		particles_count += csize;
 
 	return n,t,x,y,z,vx,vy,vz,particles_count
+
 class BinaryBoxReader:
 
 	def __init__(self, elemets_description = None, chunk_size = 100000):
@@ -64,14 +65,12 @@ class BinaryBoxReader:
 			except:
 				raise "Elements description has to have \"id\" field"
 
-		
-
 	
-	def read(self, filename, max_particles = 9000000):
-		print ("Reading " + str(filename) + " as binary boxes")
+	def read(self, transport, max_particles = 9000000):
+		print ( "Reading binary boxes from " + transport.address )
 
-		f = open(filename, "rb")
-		data = f.read(4)
+		#f = open(filename, "rb")
+		data = transport.read(4)
 		box_count = struct.unpack("i",data)[0]
 		print "Boxes count:",box_count
 		
@@ -86,7 +85,7 @@ class BinaryBoxReader:
 			print ("Created {} containers".format(len(containers)))
 		particles_count = max_particles;
 
-		n,t,x,y,z,vx,vy,vz,particles_count  = raw_particles(f,box_count, max_particles)
+		n,t,x,y,z,vx,vy,vz,particles_count  = raw_particles(transport, box_count, max_particles)
 		
 		if self.elemets_description:
 			for element in self.elemets_description:
