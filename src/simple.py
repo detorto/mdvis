@@ -2,6 +2,7 @@ import numpy
 import sys
 
 from mmdlab.readers.binary_box_reader import BinaryBoxReader
+from mmdlab.readers import transport
 from mmdlab.filters import RegionFilter
 
 from mmdlab.utils import init_mlab_scene
@@ -21,7 +22,7 @@ def read():
 
 	reader = BinaryBoxReader(elements_description)
 
-	elements = reader.read(sys.argv[1])
+	elements = reader.read(transport.sshfile(sys.argv[1]))
 
 	m = elements["Nickel"]
 	g = elements["Nitrogen"]
