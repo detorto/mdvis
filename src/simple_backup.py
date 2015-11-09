@@ -22,7 +22,7 @@ def read(f):
 
 	reader = BackupDataReader(elements_description)
 
-	elements = reader.read(transport.local_backup_dir(f,490000))
+	elements = reader.read(transport.ssh_backup_dir(f,490000))
 
 	m = elements["Nickel"]
 	g = elements["Nitrogen"]
@@ -34,10 +34,10 @@ def read(f):
 #@offscreen()
 @showable
 def draw():
-	init_mlab_scene((1024,768))
+	
 	
 	m,g = read(sys.argv[1])
-	
+	init_mlab_scene((1024,768))
 	print "Drawing Nickel" 
 	mlab.points3d(m.x, m.y, m.z, m.t, mode="point", scale_mode="none",scale_factor=m.d, colormap="black-white")
 	print "Drawing Nitrogenium"
