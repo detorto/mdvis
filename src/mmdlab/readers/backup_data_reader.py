@@ -13,9 +13,13 @@ from data_parsers import BackupDataParser
 from numba import jit,float64,int8,autojit
 
 def rd(f, t, max_particles):
-	print "Reading ",f
-	trsp = t.transport_for_file(f)
-	return BackupDataParser(trsp).raw_particles(max_particles)
+	while True:
+		try:
+			print "Reading ",f
+			trsp = t.transport_for_file(f)
+			return BackupDataParser(trsp).raw_particles(max_particles)
+		except:
+			print "Bad thing while reading, trying once more"
 	
 class BackupDataReader:
 
@@ -68,7 +72,7 @@ class BackupDataReader:
 
 			if self.elemets_description:
 				for element in self.elemets_description:
-					print "Filtering by type ", element
+			#		print "Filtering by type ", element
 		
 					containers[element].add_particles(n[t == self.elemets_description[element]["id"]], 
 													 x[t == self.elemets_description[element]["id"]],
@@ -80,14 +84,15 @@ class BackupDataReader:
 
 		
 			else:
-				print "Finalizing"
+			#	print "Finalizing"
 				containers.add_particles(n, x, y, z, vx, vy, vz)
 				
+
 		if self.elemets_description:
-				
-			print "Finalizing ", element
-			containers[element].finalize()
-			print ("Readed [{}] {} particles".format(len(containers[element].n),element))
+			for element in self.elemets_description:	
+				print "Finalizing ", element
+				containers[element].finalize()
+				print ("Readed [{}] {} particles".format(len(containers[element].n),element))
 		else:
 			print "Finalizing "
 			containers.finalize()

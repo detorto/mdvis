@@ -6,7 +6,7 @@ class BackupDataParser:
 		self.transport = transport
 		data = self.transport.read(4)
 		self.box_count = struct.unpack("i",data)[0]	
-		print "Box count: ",  self.box_count
+#		print "Box count: ",  self.box_count
 
 	def raw_particles(self, particles_count):	
 		n = numpy.zeros(particles_count, dtype='i')
@@ -28,8 +28,8 @@ class BackupDataParser:
 		
 		for box in xrange(self.box_count):
 
-			if box % 5000==0:
-				print "Reading box", box, "of",self.box_count
+#			if box % 5000==0:
+#				print "Reading box", box, "of",self.box_count
 		
 			data = self.transport.read(4*5)
 			
@@ -37,6 +37,8 @@ class BackupDataParser:
 				break;
 			
 			bxyz2, blay, breal, msize, csize  =  struct.unpack("iiiii", data);
+			if breal == 0:
+				print "has virtual box"
 		#	print bxyz2, blay, breal, msize, csize
 			if csize <= 0:
 				continue 

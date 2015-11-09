@@ -92,11 +92,11 @@ class ssh_backup_dir:
 	def transport_for_file(self, f):
 		t = paramiko.Transport((self.server, 22))  
 		t.connect(username=self.login, password=self.passwd)  
-		t.window_size = 2147483647
-		t.packetizer.REKEY_BYTES = pow(2, 40) # 1TB max, this is a security degradation
-		t.packetizer.REKEY_PACKETS = pow(2, 40) # 1TB max, this is a security degradation
+#		t.window_size = 2147483647
+#		t.packetizer.REKEY_BYTES = pow(2, 40) # 1TB max, this is a security degradation
+#		t.packetizer.REKEY_PACKETS = pow(2, 40) # 1TB max, this is a security degradation
 		sftp = paramiko.SFTPClient.from_transport(t)		
-		tr = sftp.file(f,"r",bufsize=1024*1024)
+		tr = sftp.file(f,"r",bufsize=1024)
 		return tr
 		
 
