@@ -1,7 +1,7 @@
 import numpy
 import sys
 
-from mmdlab.readers.reconstructed_data_reader import ReconstructedDataReader
+from mmdlab.readers.backup_data_reader import BackupDataReader
 from mmdlab.readers import transport
 from mmdlab.filters import RegionFilter
 
@@ -20,9 +20,9 @@ elements_description = \
 
 def read(f):
 
-	reader = ReconstructedDataReader(elements_description)
+	reader = BackupDataReader(elements_description)
 
-	elements = reader.read(transport.localfile(f))
+	elements = reader.read(transport.local_backup_dir(f,490000))
 
 	m = elements["Nickel"]
 	g = elements["Nitrogen"]
@@ -35,15 +35,14 @@ def read(f):
 @showable
 def draw():
 	init_mlab_scene((1024,768))
-
-	for f in sys.argv[1:]:
-		m,g = read(f)
 	
-		print "Drawing Nickel" 
-		mlab.points3d(m.x, m.y, m.z, m.t, mode="point", scale_mode="none",scale_factor=m.d, colormap="black-white")
-		print "Drawing Nitrogenium"
-		mlab.points3d(g.x, g.y, g.z, g.t, mode="point", scale_mode="none",scale_factor=g.d, colormap="cool") 
-		mlab.outline()
+	m,g = read(sys.argv[1])
+	
+	print "Drawing Nickel" 
+	mlab.points3d(m.x, m.y, m.z, m.t, mode="point", scale_mode="none",scale_factor=m.d, colormap="black-white")
+	print "Drawing Nitrogenium"
+	mlab.points3d(g.x, g.y, g.z, g.t, mode="point", scale_mode="none",scale_factor=g.d, colormap="cool") 
+	mlab.outline()
 
 
 draw()
