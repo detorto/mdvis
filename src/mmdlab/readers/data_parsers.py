@@ -28,7 +28,7 @@ class BackupDataParser:
 		
 		for box in xrange(self.box_count):
 
-			if box % 100000==0:
+			if box % 5000==0:
 				print "Reading box", box, "of",self.box_count
 		
 			data = self.transport.read(4*5)
