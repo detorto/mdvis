@@ -5,14 +5,18 @@ import numpy
 
 from particles_container import ParticlesContainer
 
-import subprocess
+import multiprocessing as mp
 import threading
 
 from data_parsers import BackupDataParser
 
 from numba import jit,float64,int8,autojit
 
-
+def rd(f, t, max_particles):
+	print "Reading ",f
+	trsp = t.transport_for_file(f)
+	return BackupDataParser(trsp).raw_particles(max_particles)
+	
 class BackupDataReader:
 
 	def __init__(self, elemets_description = None, chunk_size = 100000):
@@ -29,11 +33,11 @@ class BackupDataReader:
 				raise "Elements description has to have \"id\" field"
 
 	
-	def read(self, transport, max_particles = 100000):
+	def read(self, transport, max_particles = 100000, np=10):
 
 		print ( "Reading backup directory " + transport.address )
 
-		file_transports = transport.list()
+		files = transport.list()
 		
 		containers = {}
 
@@ -46,12 +50,12 @@ class BackupDataReader:
 		if self.elemets_description:
 			print ("Created {} containers".format(len(containers)))
 		particles_count = max_particles;
-		
-		for f in file_transports:
-			print "Parsing ", f.address
-			raw_particles  = BackupDataParser(f).raw_particles(max_particles)
-			print (raw_particles["count"])
-		
+
+		pool = mp.Pool(processes=np)
+		results = [pool.apply_async(rd, args=(f, transport, max_particles)) for f in files]
+
+		for raw_particles in results:
+			raw_particles = raw_particles.get()
 			n = raw_particles["n"]
 			t = raw_particles["t"]
 			x = raw_particles["x"]
@@ -60,7 +64,6 @@ class BackupDataReader:
 			vx = raw_particles["vx"]
 			vy = raw_particles["vy"]
 			vz = raw_particles["vz"]
-
 			particles_count = raw_particles["count"]
 
 			if self.elemets_description:
