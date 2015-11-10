@@ -2,7 +2,7 @@ import os
 import sys
 import struct
 import numpy
-
+from time import time
 from particles_container import ParticlesContainer
 
 import multiprocessing as mp
@@ -10,7 +10,7 @@ import threading
 
 from data_parsers import BackupDataParser
 
-from numba import jit,float64,int8,autojit
+#from numba import jit,float64,int8,autojit
 
 def rd(f, t, max_particles):
 	while True:
@@ -37,7 +37,7 @@ class BackupDataReader:
 				raise "Elements description has to have \"id\" field"
 
 	
-	def read(self, transport, max_particles = 100000, np=10):
+	def read(self, transport, max_particles = 100000, np=50):
 
 		print ( "Reading backup directory " + transport.address )
 
@@ -56,8 +56,11 @@ class BackupDataReader:
 		particles_count = max_particles;
 
 		pool = mp.Pool(processes=np)
+	
 		results = [pool.apply_async(rd, args=(f, transport, max_particles)) for f in files]
+		print "Created ",np," readers"
 
+		ts = time();
 		for raw_particles in results:
 			raw_particles = raw_particles.get()
 			n = raw_particles["n"]
@@ -69,8 +72,9 @@ class BackupDataReader:
 			vy = raw_particles["vy"]
 			vz = raw_particles["vz"]
 			particles_count = raw_particles["count"]
-
+			tts = time()
 			if self.elemets_description:
+				
 				for element in self.elemets_description:
 			#		print "Filtering by type ", element
 		
@@ -87,7 +91,6 @@ class BackupDataReader:
 			#	print "Finalizing"
 				containers.add_particles(n, x, y, z, vx, vy, vz)
 				
-
 		if self.elemets_description:
 			for element in self.elemets_description:	
 				print "Finalizing ", element
@@ -99,5 +102,6 @@ class BackupDataReader:
 			print ("Readed [{}] particles".format(len(containers.n)))
 
 
-		print "returning"
+		print "Readed directory, total read time:", time()-ts
+		
 		return containers
