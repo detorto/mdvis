@@ -37,7 +37,7 @@ class BackupDataReader:
 				raise "Elements description has to have \"id\" field"
 
 	
-	def read(self, transport, max_particles = 100000, np=50):
+	def read(self, transport, max_particles = 100000, np=5):
 
 		print ( "Reading backup directory " + transport.address )
 

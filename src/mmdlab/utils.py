@@ -73,3 +73,8 @@ def chunks(l, n):
     """Yield successive n-sized chunks from l."""
     for i in xrange(0, len(l), n):
         yield l[i:i+n]
+
+def pairs(l):
+    """Yield successive n-sized chunks from l."""
+    for i in xrange(1, len(l)):
+        yield (l[i-1],l[i]])
